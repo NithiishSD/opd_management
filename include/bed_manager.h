@@ -1,21 +1,19 @@
 #ifndef bed_manager_h
 #define bed_manager_h
 
-#include <unordered_map>
 #include <queue>
 #include <vector>
-
+#include "hash_table.h"
 using namespace std;
 
 class BedManager
 {
 private:
-    unordered_map<int, bool> bedStatus;
+    HashTable beds;
     priority_queue<int, vector<int>, greater<int>> freeBeds;
 
 public:
-    BedManager(int totalBeds);
-
+    BedManager(int size = 20) : beds(size) {}
     int allocateBed();
     void releaseBed(int bedID);
     int getAvailableCount() const;

@@ -4,6 +4,7 @@
 #include <queue>
 #include <vector>
 #include "patients.h"
+#include "heap.h"
 using namespace std;
 
 struct ComparePriority
@@ -17,13 +18,15 @@ struct ComparePriority
 class OPDQueue
 {
 private:
-    priority_queue<Patient, vector<Patient>, ComparePriority> pq;
+    Heap heap;
 
 public:
+    OPDQueue(int capacity = 100) : heap(capacity) {}
     void addPatient(const Patient &p);
     Patient nextPatient();
     bool isEmpty() const;
     int size() const;
+    void display() const;
 };
 
 #endif
