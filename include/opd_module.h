@@ -1,21 +1,32 @@
-#ifndef OPD_MODULE_H
-#define OPD_MODULE_H
-
-#include "heap.h"
+#include "../include/heap.h"
 #include <iostream>
 using namespace std;
 
 class OPDModule
 {
-private:
-    Heap queue; // max-heap based on Patient.priority
+    Heap triage;
 
 public:
-    OPDModule();
-    void registerPatient(int id, const string &name, int severity);
-    bool hasWaitingPatients() const;
-    Patient serveNextPatient(); // returns patient served (or default patient)
-    void showQueue() const;
-};
+    OPDModule(int capacity = 100) : triage(capacity) {}
 
-#endif
+    void registerPatient(const Patient &p)
+    {
+        triage.insert(p);
+        cout << "[OPD] Registered " << p.getName()
+             << " (Priority " << p.getPriority() << ")\n";
+    }
+
+    Patient assignNextPatient()
+    {
+        if (triage.isEmpty())
+        {
+            cout << "[OPD] No patients waiting\n";
+            return Patient();
+        }
+        Patient p = triage.extractMax();
+        cout << "[OPD] Assigning " << p.getName() << " to doctor\n";
+        return p;
+    }
+
+    bool hasWaiting() const { return !triage.isEmpty(); }
+};

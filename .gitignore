@@ -1,0 +1,31 @@
+# Object files
+*.o
+*.obj
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+.venv/
+venv/
+
+# Database and config files (optional)
+config.json
+
+# Logs
+*.log
+
+# IDE and editor folders
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Build and dist folders
+build/
+dist/

@@ -6,21 +6,26 @@
 using namespace std;
 
 // ------------------- Add Hospital -------------------
-void CityGraph::addHospital(int hospitalID) {
-    if (adjacencyList.find(hospitalID) == adjacencyList.end()) {
+void CityGraph::addHospital(int hospitalID)
+{
+    if (adjacencyList.find(hospitalID) == adjacencyList.end())
+    {
         adjacencyList[hospitalID] = vector<Edge>();
     }
 }
 
 // ------------------- Add Connection -------------------
-void CityGraph::addConnection(int from, int to, int distance) {
+void CityGraph::addConnection(int from, int to, int distance)
+{
     adjacencyList[from].push_back({to, distance});
     adjacencyList[to].push_back({from, distance}); // undirected
 }
 
 // ------------------- Get Connections -------------------
-vector<Edge> CityGraph::getConnections(int hospitalID) const {
-    if (adjacencyList.find(hospitalID) != adjacencyList.end()) {
+vector<Edge> CityGraph::getConnections(int hospitalID) const
+{
+    if (adjacencyList.find(hospitalID) != adjacencyList.end())
+    {
         return adjacencyList.at(hospitalID);
     }
     return vector<Edge>();
@@ -28,10 +33,12 @@ vector<Edge> CityGraph::getConnections(int hospitalID) const {
 
 // ------------------- Find Nearest Hospital -------------------
 // Returns hospitalID of nearest hospital with available beds
-int CityGraph::findNearestHospital(int sourceID, const unordered_map<int, int> &availability) {
+int CityGraph::findNearestHospital(int sourceID, const unordered_map<int, int> &availability)
+{
     // Dijkstra's algorithm
     unordered_map<int, int> dist;
-    for (auto &pair : adjacencyList) {
+    for (auto &pair : adjacencyList)
+    {
         dist[pair.first] = INT_MAX;
     }
 
@@ -41,19 +48,23 @@ int CityGraph::findNearestHospital(int sourceID, const unordered_map<int, int> &
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
     pq.push({0, sourceID});
 
-    while (!pq.empty()) {
+    while (!pq.empty())
+    {
         auto [currentDist, u] = pq.top();
         pq.pop();
 
-        if (availability.find(u) != availability.end() && availability.at(u) > 0) {
+        if (availability.find(u) != availability.end() && availability.at(u) > 0)
+        {
             return u; // nearest hospital with free bed found
         }
 
-        for (auto &edge : adjacencyList[u]) {
+        for (auto &edge : adjacencyList[u])
+        {
             int v = edge.to;
             int w = edge.distance;
 
-            if (dist[u] + w < dist[v]) {
+            if (dist[u] + w < dist[v])
+            {
                 dist[v] = dist[u] + w;
                 pq.push({dist[v], v});
             }

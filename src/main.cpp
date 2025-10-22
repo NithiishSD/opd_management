@@ -1,10 +1,10 @@
 #include "../include/patients.h"
 #include "../include/heap.h"
 #include "../include/hash_table.h"
-#include "../modules/opd_module.cpp"
-#include "../modules/admission_module.cpp"
-#include "../modules/discharge_module.cpp"
-#include "../modules/city_integration_module.cpp"
+#include "../include/opd_module.h"
+#include "../include/admission_module.h"
+#include "../include/discharge_module.h"
+#include "../include/city_integartion_module.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
