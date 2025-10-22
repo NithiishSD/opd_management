@@ -13,7 +13,7 @@ private:
     priority_queue<int, vector<int>, greater<int>> freeBeds;
 
 public:
-    BedManager(int size = 20) : beds(size) {}
+    BedManager(int size = 20);
     int allocateBed();
     void releaseBed(int bedID);
     int getAvailableCount() const;
