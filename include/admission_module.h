@@ -13,8 +13,9 @@ class AdmissionModule
 public:
     AdmissionModule(int totalBeds = 20);
 
-    bool admitPatient(Patient &p); // Admit patient and assign bed
-    void showBedStatus() const;    // Display current bed allocation
+    bool admitPatient(Patient &p);           // Admit patient and assign bed
+    void showBedStatus() const;              // Display current bed allocation
+    void showBedStatus(int patientID) const; // overload
     HashTable &getBeds() { return beds; }
 };
 

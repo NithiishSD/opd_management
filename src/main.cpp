@@ -5,50 +5,31 @@
 #include "../include/admission_module.h"
 #include "../include/discharge_module.h"
 #include "../include/city_integartion_module.h"
+
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <vector>
 #include <algorithm>
 using namespace std;
 
-// Function to read patients from CSV
-vector<Patient> readPatientsFromCSV(const string &filename)
+// Function to calculate patient priority dynamically
+int calculatePriority(int severity, int age)
 {
-    vector<Patient> patients;
-    ifstream file(filename);
-    if (!file)
-    {
-        cout << "Error: Could not open " << filename << endl;
-        return patients;
-    }
-    string line;
-    getline(file, line); // skip header
-    while (getline(file, line))
-    {
-        stringstream ss(line);
-        string id, name, age, gender, priority, disease;
-        getline(ss, id, ',');
-        getline(ss, name, ',');
-        getline(ss, age, ',');
-        getline(ss, gender, ',');
-        getline(ss, priority, ',');
-        getline(ss, disease, ',');
-        Patient p(stoi(id), name, stoi(age), gender, stoi(priority), disease);
-        patients.push_back(p);
-    }
-    return patients;
+    // You can adjust weights here — higher severity and age get higher priority
+    return severity * 2 + (age > 60 ? 3 : 0);
 }
 
 int main()
 {
-    cout << "=== Hospital Management System ===\n";
+    cout << "=============================\n";
+    cout << "   Hospital Management System\n";
+    cout << "=============================\n";
 
     // Initialize modules
-    OPDModule opd(10);
-    AdmissionModule admission(2);
+    OPDModule opd(50);
+    AdmissionModule admission(5);
     DischargeModule discharge(admission.getBeds());
 
+    // Create city hospital graph (3 hospitals)
     CityIntegrationModule city(3);
     city.addHospital(0, "City Hospital A", 2);
     city.addHospital(1, "City Hospital B", 1);
@@ -58,71 +39,131 @@ int main()
     city.setDistance(0, 2, 10);
     city.setDistance(1, 2, 2);
 
-    // Read patients from CSV
-    vector<Patient> patients = readPatientsFromCSV("../data/patients.csv");
-    for (const auto &p : patients)
-        opd.registerPatient(p);
-
     int choice;
+    int patientID = 100; // auto increment
+    vector<Patient> admittedPatients;
+
     do
     {
-        cout << "\n=== Menu ===\n";
-        cout << "1. Assign next patient from OPD to hospital\n";
-        cout << "2. Discharge patient by ID\n";
-        cout << "3. Show hospital bed status\n";
-        cout << "4. Show city hospitals status\n";
-        cout << "5. Exit\n";
-        cout << "Enter choice: ";
+        cout << "\n========= MAIN MENU =========\n";
+        cout << "1. Register New Patient in OPD\n";
+        cout << "2. Assign Patient to Hospital\n";
+        cout << "3. Discharge Patient\n";
+        cout << "4. Show OPD Waiting Queue\n";
+        cout << "5. Show Hospital Bed Status\n";
+        cout << "6. Show City Hospitals Status\n";
+        cout << "7. Exit\n";
+        cout << "=============================\n";
+        cout << "Enter your choice: ";
         cin >> choice;
 
         switch (choice)
         {
         case 1:
         {
+            string name, gender, disease;
+            int age, severity;
+
+            cout << "\nEnter Patient Name: ";
+            cin.ignore();
+            getline(cin, name);
+            cout << "Enter Age: ";
+            cin >> age;
+            cout << "Enter Gender: ";
+            cin >> gender;
+            cout << "Enter Disease/Condition: ";
+            cin.ignore();
+            getline(cin, disease);
+            cout << "Enter Severity Level (1-10): ";
+            cin >> severity;
+
+            int priority = calculatePriority(severity, age);
+            Patient p(patientID++, name, age, gender, priority, disease);
+            opd.registerPatient(p);
+            cout << " Patient " << p.getName() << " registered with priority " << p.getPriority() << endl;
+            break;
+        }
+
+        case 2:
+        {
             if (opd.hasWaiting())
             {
-                Patient p = opd.assignNextPatient();
-                bool admitted = admission.admitPatient(p);
-                if (!admitted)
+                Patient next = opd.assignNextPatient();
+                cout << "Assigning " << next.getName() << " to hospital...\n";
+
+                bool admitted = admission.admitPatient(next);
+                if (admitted)
                 {
-                    cout << "[Main] Hospital full. Searching city hospitals for " << p.getName() << "\n";
-                    city.findNearestHospitalWithBed(p);
+                    admittedPatients.push_back(next);
+                    cout << "🏥 " << next.getName() << " successfully admitted locally.\n";
+                }
+                else
+                {
+                    cout << " Local hospital full. Finding nearest hospital...\n";
+                    city.findNearestHospitalWithBed(next);
                 }
             }
             else
             {
-                cout << "[Main] No patients waiting in OPD\n";
+                cout << "No patients waiting in OPD.\n";
             }
             break;
         }
-        case 2:
+
+        case 3:
         {
+            if (admittedPatients.empty())
+            {
+                cout << " No patients currently admitted.\n";
+                break;
+            }
+
+            cout << "Enter Patient ID to discharge: ";
             int pid;
-            cout << "Enter patient ID to discharge: ";
             cin >> pid;
-            // Find patient object
-            auto it = find_if(patients.begin(), patients.end(), [pid](Patient &p)
+
+            auto it = find_if(admittedPatients.begin(), admittedPatients.end(),
+                              [pid](Patient &p)
                               { return p.getPatientID() == pid; });
-            if (it != patients.end())
+
+            if (it != admittedPatients.end())
+            {
                 discharge.dischargePatient(*it);
+                admission.showBedStatus((*it).getPatientID());
+                admittedPatients.erase(it);
+                cout << " Patient discharged successfully.\n";
+            }
             else
-                cout << "[Main] Patient ID not found\n";
+            {
+                cout << " Patient ID not found in current admissions.\n";
+            }
             break;
         }
-        case 3:
+
+        case 4:
+            opd.showQueue();
+            break;
+
+        case 5:
             admission.showBedStatus();
             break;
-        case 4:
+
+        case 6:
             city.showHospitals();
             break;
-        case 5:
-            cout << "Exiting...\n";
-            break;
-        default:
-            cout << "Invalid choice\n";
-        }
-    } while (choice != 5);
 
-    cout << "\n=== Simulation Completed ✅ ===\n";
+        case 7:
+            cout << "Exiting system\n";
+            break;
+
+        default:
+            cout << "Invalid option. Try again.\n";
+        }
+
+    } while (choice != 7);
+
+    cout << "\n=============================\n";
+    cout << " Simulation Ended \n";
+    cout << "=============================\n";
     return 0;
 }

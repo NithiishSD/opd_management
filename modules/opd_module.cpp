@@ -1,32 +1,50 @@
+#include "../include/opd_module.h"
+#include "../include/patients.h"
 #include "../include/heap.h"
 #include <iostream>
 using namespace std;
 
-class OPDModule
+// Constructor
+OPDModule::OPDModule(int capacity) : triage(capacity) {}
+
+// Register a patient into OPD queue
+void OPDModule::registerPatient(const Patient &p)
 {
-    Heap triage;
+    triage.insert(p);
+    cout << "[OPD] Registered " << p.getName()
+         << " (Priority " << p.getPriority() << ")\n";
+}
 
-public:
-    OPDModule(int capacity = 100) : triage(capacity) {}
-
-    void registerPatient(const Patient &p)
+// Assign next patient based on highest priority
+Patient OPDModule::assignNextPatient()
+{
+    if (triage.isEmpty())
     {
-        triage.insert(p);
-        cout << "[OPD] Registered " << p.getName()
-             << " (Priority " << p.getPriority() << ")\n";
+        cout << "[OPD] No patients waiting\n";
+        return Patient();
     }
 
-    Patient assignNextPatient()
+    Patient p = triage.extractMax();
+    cout << "[OPD] Assigning " << p.getName() << " to doctor\n";
+    return p;
+}
+
+// Check if queue has waiting patients
+bool OPDModule::hasWaiting() const
+{
+    return !triage.isEmpty();
+}
+
+// Display current queue
+void OPDModule::showQueue() const
+{
+    if (triage.isEmpty())
     {
-        if (triage.isEmpty())
-        {
-            cout << "[OPD] No patients waiting\n";
-            return Patient();
-        }
-        Patient p = triage.extractMax();
-        cout << "[OPD] Assigning " << p.getName() << " to doctor\n";
-        return p;
+        cout << "⚠️  No patients currently in queue.\n";
+        return;
     }
 
-    bool hasWaiting() const { return !triage.isEmpty(); }
-};
+    cout << "\n====== 🩺 OPD Waiting Queue ======\n";
+    triage.display(); // Calls Heap::display()
+    cout << "=================================\n";
+}

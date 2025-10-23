@@ -1,34 +1,35 @@
-#ifndef CITY_INTEGRATION_H
-#define CITY_INTEGRATION_H
+#ifndef CITY_INTEGRATION_MODULE_H
+#define CITY_INTEGRATION_MODULE_H
 
-#include "../include/hash_table.h"
-#include "../include/patients.h"
+#include <iostream>
 #include <vector>
 #include <string>
-#include <iostream>
-#include <limits>
+#include "../include/patients.h"
 using namespace std;
 
-// Simple structure for hospital nodes in the city
 struct HospitalNode
 {
     string name;
+    int id;
     int bedsAvailable;
-    int id; // Unique hospital ID
-    HospitalNode(int i = 0, string n = "", int b = 0) : id(i), name(n), bedsAvailable(b) {}
+
+    // Match declaration order with initialization order
+    HospitalNode(int i = 0, string n = "", int b = 0)
+        : name(n), id(i), bedsAvailable(b) {}
 };
 
 class CityIntegrationModule
 {
+private:
     vector<HospitalNode> hospitals;
-    vector<vector<int>> adjMatrix; // distance between hospitals
+    vector<vector<int>> distanceMatrix; // adjacency matrix for distances
 
 public:
-    CityIntegrationModule(int totalHospitals);
+    CityIntegrationModule(int numHospitals = 3);
 
     void addHospital(int id, const string &name, int beds);
-    void setDistance(int fromID, int toID, int distance);
-    int findNearestHospitalWithBed(const Patient &p);
+    void setDistance(int from, int to, int distance);
+    void findNearestHospitalWithBed(const Patient &p);
     void showHospitals() const;
 };
 

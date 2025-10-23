@@ -1,0 +1,4 @@
+HospitalID,Name,Beds,Distances
+0,City Hospital A,2,0;5;10
+1,City Hospital B,1,5;0;2
+2,City Hospital C,3,10;2;0

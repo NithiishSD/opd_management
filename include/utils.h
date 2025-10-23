@@ -7,6 +7,7 @@
 #include <chrono>
 #include <iostream>
 #include <random>
+#include "./include/admission_module.h"
 using namespace std;
 
 namespace Utils
@@ -16,5 +17,6 @@ namespace Utils
     int generateRandomNumber(int min, int max);
     void simulateDelay(int milliseconds);
 }
+void loadHospitalsFromCSV(const string &filename, CityIntegrationModule &city);
 
 #endif

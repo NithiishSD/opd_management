@@ -32,3 +32,9 @@ void AdmissionModule::showBedStatus() const
     cout << "[Admission] Current bed status:\n";
     beds.displayBeds();
 }
+void AdmissionModule::showBedStatus(int patientID) const
+{
+    cout << "\n[Admission] Checking bed for patient ID " << patientID << "...\n";
+    // Here, you could later link to patient->bedID logic
+    showBedStatus(); // fallback to general view for now
+}
