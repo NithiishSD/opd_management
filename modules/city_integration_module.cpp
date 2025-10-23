@@ -1,91 +1,121 @@
 #include "../include/city_integartion_module.h"
-#include <queue>
+#include "admission_module.h"
+#include <limits>
+#include <algorithm>
+#include <iostream>
 using namespace std;
 
-CityIntegrationModule::CityIntegrationModule(int totalHospitals)
+// Constructor
+CityIntegrationModule::CityIntegrationModule(int numHospitals)
 {
-    hospitals.resize(totalHospitals);
-    adjMatrix.resize(totalHospitals, vector<int>(totalHospitals, -1));
+    hospitals.reserve(numHospitals);
+    distanceMatrix.resize(numHospitals, vector<int>(numHospitals, 0));
 }
 
-void CityIntegrationModule::addHospital(int id, const string &name, int beds)
+// Load hospital data from CSV
+// CSV format: id,name,city,totalBeds
+void CityIntegrationModule::loadHospitalsFromCSV(const string &path)
 {
-    hospitals[id] = HospitalNode(id, name, beds);
-}
-
-void CityIntegrationModule::setDistance(int fromID, int toID, int distance)
-{
-    adjMatrix[fromID][toID] = distance;
-    adjMatrix[toID][fromID] = distance;
-}
-
-int CityIntegrationModule::findNearestHospitalWithBed(const Patient &p)
-{
-    int n = hospitals.size();
-    vector<int> dist(n, numeric_limits<int>::max());
-    vector<bool> visited(n, false);
-
-    dist[0] = 0;
-
-    for (int count = 0; count < n; count++)
+    ifstream file(path);
+    if (!file)
     {
-        int u = -1;
-        int minDist = numeric_limits<int>::max();
-        for (int i = 0; i < n; i++)
-        {
-            if (!visited[i] && dist[i] < minDist)
-            {
-                u = i;
-                minDist = dist[i];
-            }
-        }
-        if (u == -1)
-            break;
-        visited[u] = true;
-
-        for (int v = 0; v < n; v++)
-        {
-            if (adjMatrix[u][v] != -1 && !visited[v])
-            {
-                if (dist[u] + adjMatrix[u][v] < dist[v])
-                {
-                    dist[v] = dist[u] + adjMatrix[u][v];
-                }
-            }
-        }
+        cout << "Error: Could not open " << path << endl;
+        return;
     }
 
-    // Find nearest hospital with available bed
-    int nearestID = -1;
-    int minDistance = numeric_limits<int>::max();
-    for (int i = 0; i < n; i++)
+    string line;
+    getline(file, line); // Skip header
+
+    int index = 0;
+    while (getline(file, line))
     {
-        if (hospitals[i].bedsAvailable > 0 && dist[i] < minDistance)
+        stringstream ss(line);
+        string idStr, name, city, bedsStr;
+        getline(ss, idStr, ',');
+        getline(ss, name, ',');
+        getline(ss, city, ',');
+        getline(ss, bedsStr, ',');
+
+        int id = stoi(idStr);
+        int beds = stoi(bedsStr);
+
+        HospitalNode h(id, name, city, beds);
+        hospitals.push_back(h);
+
+        index++;
+    }
+
+    // Initialize distance matrix with 0
+    int n = hospitals.size();
+    distanceMatrix.resize(n, vector<int>(n, 0));
+}
+
+// Set distance between hospitals
+void CityIntegrationModule::setDistance(int from, int to, int distance)
+{
+    if (from >= 0 && from < hospitals.size() && to >= 0 && to < hospitals.size())
+    {
+        distanceMatrix[from][to] = distance;
+        distanceMatrix[to][from] = distance; // symmetric
+    }
+}
+
+// Find nearest hospital with available bed
+void CityIntegrationModule::findNearestHospitalWithBed(Patient &p)
+{
+    int nearestID = -1;
+    int minDist = numeric_limits<int>::max();
+
+    for (size_t i = 0; i < hospitals.size(); i++)
+    {
+        if (hospitals[i].bedsAvailable > 0)
         {
-            minDistance = dist[i];
+            // Compute simple "distance" metric if location is available
+            // Currently just pick the first available if no real distance
             nearestID = i;
+            break;
         }
     }
 
     if (nearestID != -1)
     {
-        cout << "[CityIntegration] Nearest hospital with available bed for "
-             << p.getName() << " is " << hospitals[nearestID].name
-             << " (Distance: " << minDistance << ")\n";
         hospitals[nearestID].bedsAvailable--;
+
+        // Assign hospital info to patient
+        p.setAssignedHospital(hospitals[nearestID].name);
+        p.setAssignedBedID(hospitals[nearestID].totalBeds - hospitals[nearestID].bedsAvailable);
+
+        cout << "🏥 Patient " << p.getName() << " allocated to "
+             << p.getAssignedHospital() << ", Bed ID: "
+             << p.getAssignedBedID() << endl;
     }
     else
     {
-        cout << "[CityIntegration] No hospital available for " << p.getName() << "\n";
+        cout << "⚠️ No beds available in any hospital currently. "
+             << p.getName() << " is added to waiting list.\n";
     }
-
-    return nearestID;
 }
 
+// Display hospital status
 void CityIntegrationModule::showHospitals() const
 {
-    cout << "[CityIntegration] Hospitals info:\n";
+    cout << "\n===== City Hospitals Status =====\n";
     for (const auto &h : hospitals)
-        cout << "ID:" << h.id << " Name:" << h.name
-             << " Available beds:" << h.bedsAvailable << "\n";
+    {
+        cout << "Hospital: " << h.name
+             << " | City: " << h.city
+             << " | Total Beds: " << h.totalBeds
+             << " | Available Beds: " << h.bedsAvailable << endl;
+    }
+    cout << "================================\n";
+}
+void CityIntegrationModule::addHospital(int id, const string &name, int beds, const string &cityName)
+{
+    hospitals.emplace_back(id, name, cityName, beds);
+
+    // Resize distance matrix dynamically
+    int n = hospitals.size();
+    distanceMatrix.resize(n);
+    for (auto &row : distanceMatrix)
+        row.resize(n, 0);
 }

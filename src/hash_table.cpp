@@ -1,109 +1,98 @@
-#include "hash_table.h"
+#include "../include/hash_table.h"
 #include <iostream>
 using namespace std;
 
-// Bed constructor
-Bed::Bed() : bedID(-1), isOccupied(false), isDeleted(false) {}
+HashTable::HashTable(int cap) : capacity(cap), bedsOccupied(cap, false) {}
 
-// Private hash function
-int HashTable::hashFunc(int key) const
-{
-    return key % capacity;
-}
-
-// Public member functions
-HashTable::HashTable(int capacity)
-{
-    this->capacity = capacity;
-    size = 0;
-    table = new Bed[capacity];
-}
-
-HashTable::~HashTable()
-{
-    delete[] table;
-}
-
+// Check if all beds are occupied
 bool HashTable::isFull() const
 {
-    return size == capacity;
+    return getOccupiedBeds() >= capacity;
 }
 
-void HashTable::allocateBed(int bedID)
+// Allocate first free bed to a patientID
+bool HashTable::allocateBed(int patientID, int &bedID)
 {
     if (isFull())
+        return false;
+    for (int i = 0; i < capacity; ++i)
     {
-        cout << "Hash table full! Cannot allocate.\n";
-        return;
-    }
-
-    int idx = hashFunc(bedID);
-    int startIdx = idx;
-
-    while (table[idx].isOccupied && !table[idx].isDeleted)
-    {
-        idx = (idx + 1) % capacity;
-        if (idx == startIdx)
+        if (!bedsOccupied[i])
         {
-            cout << "No empty slot available!\n";
-            return;
+            bedsOccupied[i] = true;
+            bedID = i + 1;
+            patientBedMap[patientID] = bedID;
+            return true;
         }
     }
-
-    table[idx].bedID = bedID;
-    table[idx].isOccupied = true;
-    table[idx].isDeleted = false;
-    size++;
+    return false;
 }
 
-void HashTable::freeBed(int bedID)
+// Allocate first free bed, return bedID via reference (without patientID)
+// bool HashTable::allocateBed(int &bedID)
+// {
+//     if (isFull())
+//         return false;
+//     for (int i = 0; i < capacity; ++i)
+//     {
+//         if (!bedsOccupied[i])
+//         {
+//             bedsOccupied[i] = true;
+//             bedID = i + 1;
+//             return true;
+//         }
+//     }
+//     return false;
+// }
+
+// Free bed assigned to patientID
+void HashTable::freeBed(int patientID)
 {
-    int idx = hashFunc(bedID);
-    int startIdx = idx;
-
-    while (table[idx].bedID != -1)
+    auto it = patientBedMap.find(patientID);
+    if (it != patientBedMap.end())
     {
-        if (table[idx].bedID == bedID && table[idx].isOccupied)
-        {
-            table[idx].isOccupied = false;
-            table[idx].isDeleted = true;
-            cout << "Bed " << bedID << " released.\n";
-            size--;
-            return;
-        }
-        idx = (idx + 1) % capacity;
-        if (idx == startIdx)
-            break;
+        int bedID = it->second;
+        if (bedID >= 1 && bedID <= capacity)
+            bedsOccupied[bedID - 1] = false;
+        patientBedMap.erase(it);
     }
-    cout << "Bed not found!\n";
 }
 
+// Check if a bed is available
 bool HashTable::isAvailable(int bedID) const
 {
-    int idx = hashFunc(bedID);
-    int startIdx = idx;
-
-    while (table[idx].bedID != -1)
-    {
-        if (table[idx].bedID == bedID && table[idx].isOccupied)
-            return false;
-        idx = (idx + 1) % capacity;
-        if (idx == startIdx)
-            break;
-    }
-    return true;
+    if (bedID < 1 || bedID > capacity)
+        return false;
+    return !bedsOccupied[bedID - 1];
 }
 
+// Display all beds
 void HashTable::displayBeds() const
 {
-    cout << "\n--- Bed Status ---\n";
-    for (int i = 0; i < capacity; i++)
+    cout << "Bed Status:\n";
+    for (int i = 0; i < capacity; ++i)
     {
-        if (table[i].isOccupied)
-            cout << "Bed " << table[i].bedID << " → OCCUPIED\n";
-        else if (table[i].isDeleted)
-            cout << "Bed " << table[i].bedID << " → FREED\n";
-        else
-            cout << "Slot " << i << " → EMPTY\n";
+        cout << "Bed " << i + 1 << ": "
+             << (bedsOccupied[i] ? "Occupied" : "Free") << "\n";
     }
+}
+
+// Getters
+int HashTable::getTotalBeds() const { return capacity; }
+
+int HashTable::getOccupiedBeds() const
+{
+    int count = 0;
+    for (bool occupied : bedsOccupied)
+        if (occupied)
+            count++;
+    return count;
+}
+bool HashTable::allocateBed(int bedID)
+{
+    if (bedID <= 0 || bedID > static_cast<int>(bedsOccupied.size()) || bedsOccupied[bedID - 1])
+
+        return false; // invalid or occupied
+    bedsOccupied[bedID - 1] = true;
+    return true;
 }

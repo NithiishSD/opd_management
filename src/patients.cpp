@@ -1,35 +1,52 @@
 #include "../include/patients.h"
-#include <iostream>
 #include <ctime>
-using namespace std;
 
-// ------------------- Default Constructor -------------------
-Patient::Patient() {
-    patientID = 0;
+// Default constructor
+Patient::Patient()
+{
+    patientID = -1;
     name = "";
     age = 0;
     gender = "";
     priority = 0;
-    arrivalTime = time(nullptr); // current time
     disease = "";
     assignedHospital = "";
     assignedBedID = -1;
+    arrivalTime = time(nullptr);
+    location = "";
 }
 
-// ------------------- Parameterized Constructor -------------------
-Patient::Patient(int id, string n, int a, string g, int p, string d) {
+// Constructor without location
+Patient::Patient(int id, string n, int a, string g, int p, string d)
+{
     patientID = id;
     name = n;
     age = a;
     gender = g;
     priority = p;
     disease = d;
-    arrivalTime = time(nullptr); // current time
     assignedHospital = "";
     assignedBedID = -1;
+    arrivalTime = time(nullptr);
+    location = "";
 }
 
-// ------------------- Getters -------------------
+// Constructor with location
+Patient::Patient(int id, string n, int a, string g, int p, string d, string loc)
+{
+    patientID = id;
+    name = n;
+    age = a;
+    gender = g;
+    priority = p;
+    disease = d;
+    assignedHospital = "";
+    assignedBedID = -1;
+    arrivalTime = time(nullptr);
+    location = loc;
+}
+
+// Getters
 int Patient::getPatientID() const { return patientID; }
 string Patient::getName() const { return name; }
 int Patient::getAge() const { return age; }
@@ -39,12 +56,20 @@ time_t Patient::getArrivalTime() const { return arrivalTime; }
 string Patient::getDisease() const { return disease; }
 string Patient::getAssignedHospital() const { return assignedHospital; }
 int Patient::getAssignedBedID() const { return assignedBedID; }
+string Patient::getLocation() const { return location; }
 
-// ------------------- Setters -------------------
-void Patient::setAssignedHospital(const string &hospital) {
+// Setters
+void Patient::setAssignedHospital(const string &hospital)
+{
     assignedHospital = hospital;
 }
 
-void Patient::setAssignedBedID(int bedID) {
+void Patient::setAssignedBedID(int bedID)
+{
     assignedBedID = bedID;
+}
+
+void Patient::setLocation(const string &loc)
+{
+    location = loc;
 }
