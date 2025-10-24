@@ -9,12 +9,12 @@
 class CityIntegrationModule
 {
 private:
-    std::vector<Hospital> hospitals;
+    std::vector<Hospital *> hospitals;
 
 public:
     CityIntegrationModule() = default;
 
-    CityIntegrationModule(const std::vector<Hospital> &hospitalList);
+    CityIntegrationModule(const std::vector<Hospital *> &hospitalList);
 
     // void addHospital(const Hospital &h);
 

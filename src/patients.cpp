@@ -4,7 +4,6 @@
 #include <cctype>
 
 using namespace std;
-
 // Constructor
 Patient::Patient(int id, const string &name, int age, const string &gender,
                  const string &disease, const string &location)
@@ -26,24 +25,25 @@ Patient::Patient(int id, const string &name, int age, const string &gender,
 // Automatic priority computation
 void Patient::computePriority()
 {
-    // Priority mapping: lower number = higher urgency
+    // Priority mapping:
     unordered_map<string, int> diseaseSeverity = {
-        {"heart attack", 1},
-        {"stroke", 1},
-        {"severe trauma", 1},
-        {"cancer", 2},
-        {"severe infection", 2},
-        {"respiratory failure", 1},
-        {"pneumonia", 2},
+        {"heart attack", 5},
+        {"stroke", 5},
+        {"severe trauma", 5},
+        {"cancer", 4},
+        {"severe infection", 4},
+        {"respiratory failure", 5},
+        {"pneumonia", 4},
         {"diabetes complication", 3},
         {"fracture", 3},
-        {"flu", 4},
-        {"mild infection", 4},
-        {"checkup", 5}};
+        {"flu", 2},
+        {"mild infection", 2},
+        {"checkup", 1}};
 
-    int basePriority = 5; // default if disease not listed
+    int basePriority = 2; // default if disease not listed
     string d = disease;
-    transform(d.begin(), d.end(), d.begin(), ::tolower);
+    for (size_t i = 0; i < d.size(); ++i)
+        d[i] = static_cast<char>(tolower(static_cast<int>(static_cast<unsigned char>(d[i]))));
 
     for (auto &pair : diseaseSeverity)
     {
@@ -56,7 +56,7 @@ void Patient::computePriority()
 
     // Age adjustment: elderly (>65) or very young (<5) increase priority
     if (age > 65 || age < 5)
-        basePriority = max(1, basePriority - 1);
+        basePriority = max(5, basePriority + 1);
 
     priority = basePriority;
 }

@@ -27,7 +27,7 @@ int main()
     AdmissionModule admission(hospitalPtrs);
     DischargeModule discharge(hospitalPtrs);
 
-    CityIntegrationModule city(hospitalList);
+    CityIntegrationModule city(hospitalPtrs);
 
     // ================= Register Patients in OPD =================
     for (auto &p : patients)
@@ -93,7 +93,7 @@ int main()
             }
             else
             {
-
+                opd.registerPatient(p);
                 cout << "[Main] All hospitals full. Adding patient to OPD queue.\n";
             }
 

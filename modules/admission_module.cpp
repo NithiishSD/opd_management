@@ -17,21 +17,17 @@ bool AdmissionModule::admitPatient(Patient &p, CityIntegrationModule &city)
         std::cout << "[Admission] No valid hospital found for patient " << p.getName() << "\n";
         return false;
     }
-
-    int bedID = assignedHospital->assignBed(p);
-    if (bedID != -1)
-    {
-        p.setHospitalID(assignedHospital->getHospitalID());
-        p.setBedID(bedID);
-        p.setStatus("Admitted");
-        std::cout << "Patient " << p.getName() << " (ID: " << p.getPatientID() << ") admitted to:\n";
-        std::cout << "Hospital ID: " << assignedHospital->getHospitalID() << " (" << assignedHospital->getHospitalName() << ")\n";
-        std::cout << "Bed ID: " << bedID << "\n";
-        return true;
-    }
-
-    std::cout << "[Admission] No beds available in hospital " << assignedHospital->getHospitalName() << "\n";
-    return false;
+    return true;
+    // if (bedID != -1)
+    // {
+    //     p.setHospitalID(assignedHospital->getHospitalID());
+    //     p.setBedID(bedID);
+    //     p.setStatus("Admitted");
+    //     std::cout << "Patient " << p.getName() << " (ID: " << p.getPatientID() << ") admitted to:\n";
+    //     std::cout << "Hospital ID: " << assignedHospital->getHospitalID() << " (" << assignedHospital->getHospitalName() << ")\n";
+    //     std::cout << "Bed ID: " << bedID << "\n";
+    //     return true;
+    // }
 }
 
 Patient *AdmissionModule::findPatientByID(int id)
