@@ -106,7 +106,6 @@ public:
     int size() const { return count; }
 };
 
-// Explicit template instantiation
 #include "patients.h"
 template class HashTable<Patient>;
 template class HashTable<Patient *>;

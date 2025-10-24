@@ -14,7 +14,7 @@ private:
     std::string locationName;
     int totalBeds;
 
-    HashTable<Patient *> beds; // Custom hash table: BedID -> Patient
+    HashTable<Patient *> beds; // bedid,Patient
 
 public:
     Hospital() = default;
@@ -25,10 +25,10 @@ public:
     std::string getLocationName() const;
     int getTotalBeds() const;
 
-    int assignBed(Patient &p);                // Assign patient to a free bed, return BedID or -1
-    bool freeBed(int bedID);                  // Free bed
-    std::vector<int> getOccupiedBeds() const; // List of occupied beds
-    Patient *getPatientByBed(int patientID);  // Find patient by ID
+    int assignBed(Patient &p);
+    bool freeBed(int bedID);
+    std::vector<int> getOccupiedBeds() const;
+    Patient *getPatientByBed(int patientID);
 };
 
 #endif

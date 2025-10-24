@@ -4,14 +4,14 @@ BedManager::BedManager(int size) : totalBeds(size), bedOccupied(size, false)
 {
     for (int i = 0; i < size; ++i)
     {
-        freeBeds.push(i + 1); // bed IDs start from 1
+        freeBeds.push(i + 1);
     }
 }
 
 int BedManager::allocateBed()
 {
     if (freeBeds.empty())
-        return -1; // no beds available
+        return -1;
 
     int bedID = freeBeds.top();
     freeBeds.pop();

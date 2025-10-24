@@ -1,13 +1,13 @@
 #include "../include/discharge_module.h"
 
-DischargeModule::DischargeModule(std::vector<Hospital> &hospList) : hospitals(hospList) {}
+DischargeModule::DischargeModule(std::vector<Hospital *> &hospList) : hospitals(hospList) {}
 
 void DischargeModule::dischargePatient(Patient &p)
 {
     int hospitalID = p.getHospitalID();
     int bedID = p.getBedID();
 
-    if (hospitalID < 0 || bedID < 0)
+    if (hospitalID < 0 && bedID < 0)
     {
         std::cout << "[Discharge] Patient " << p.getName()
                   << " is not admitted to any hospital.\n";
@@ -16,13 +16,13 @@ void DischargeModule::dischargePatient(Patient &p)
 
     for (auto &h : hospitals)
     {
-        if (h.getHospitalID() == hospitalID)
+        if (h->getHospitalID() == hospitalID)
         {
-            bool released = h.freeBed(bedID);
+            bool released = h->freeBed(bedID);
             if (released)
             {
                 std::cout << "[Discharge] Patient " << p.getName()
-                          << " discharged from hospital " << h.getHospitalName()
+                          << " discharged from hospital " << h->getHospitalName()
                           << " | Bed ID: " << bedID << "\n";
 
                 // Reset patient bed info
@@ -32,7 +32,7 @@ void DischargeModule::dischargePatient(Patient &p)
             else
             {
                 std::cout << "[Discharge] Failed to free bed " << bedID
-                          << " in hospital " << h.getHospitalName() << "\n";
+                          << " in hospital " << h->getHospitalName() << "\n";
             }
             return;
         }

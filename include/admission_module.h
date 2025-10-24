@@ -8,17 +8,17 @@
 class AdmissionModule
 {
 private:
-    std::vector<Hospital> hospitals;
+    std::vector<Hospital *> hospitals;
 
 public:
     AdmissionModule() = default;
-    AdmissionModule(const std::vector<Hospital> &hospList);
+    AdmissionModule(const std::vector<Hospital *> &hospList);
 
     bool admitPatient(Patient &p);                    // Assign patient to a bed
     Patient *findPatientByID(int id);                 // Find patient by ID
-    std::vector<Hospital> &getHospitals();            // Access all hospitals
-    std::vector<std::pair<int, int>> getBeds() const; // HospitalID, BedID pairs
-    void showBedStatus() const;                       // Display hospital bed status
+    std::vector<Hospital *> &getHospitals();          // Access all hospitals
+    std::vector<std::pair<int, int>> getBeds() const; // HospitalID,BedID pairs
+    void showBedStatus() const;                       // Display hospitalbedstatus
 };
 
 #endif

@@ -8,21 +8,21 @@ bool CityIntegrationModule::assignPatientToNearestHospital(Patient &p)
 {
     vector<Hospital *> candidates;
 
-    // Try hospitals in same location first
+    // Try hospitals in same location
     for (auto &h : hospitals)
     {
         if (h.getLocationName() == p.getLocationName())
             candidates.push_back(&h);
     }
 
-    // If no same-location hospital, consider all hospitals
+    // If no same-location hospital,consider all hospitals
     if (candidates.empty())
     {
         for (auto &h : hospitals)
             candidates.push_back(&h);
     }
 
-    // Use greedy allocation algorithm
+    // Use greedy allocation
     return GreedyAllocation::assignPatientToHospital(p, candidates);
 }
 CityIntegrationModule::CityIntegrationModule(const std::vector<Hospital> &hospList)

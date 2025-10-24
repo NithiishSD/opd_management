@@ -14,7 +14,6 @@ int main()
 {
     cout << "=== Hospital Management System ===\n";
 
-    // ================= Load Hospitals =================
     vector<Hospital> hospitalList = readHospitalsFromCSV("data/hospitals.csv");
     vector<Hospital *> hospitalPtrs;
     for (auto &h : hospitalList)
@@ -22,13 +21,11 @@ int main()
         hospitalPtrs.push_back(&h);
     }
 
-    // ================= Load Patients =================
     vector<Patient> patients = readPatientsFromCSV("data/patients.csv");
 
-    // ================= Initialize Modules =================
     OPDModule opd(1000); // OPD max capacity
-    AdmissionModule admission(hospitalList);
-    DischargeModule discharge(hospitalList);
+    AdmissionModule admission(hospitalPtrs);
+    DischargeModule discharge(hospitalPtrs);
 
     CityIntegrationModule city(hospitalList);
 
@@ -115,6 +112,25 @@ int main()
             {
                 Patient p = opd.assignNextPatient();
                 bool admitted = admission.admitPatient(p);
+                if (admitted)
+                {
+                    // Update or add patient in the patients vector
+                    bool found = false;
+                    for (auto &patient : patients)
+                    {
+                        if (patient.getPatientID() == p.getPatientID())
+                        {
+                            patient = p; // Update with modified patient
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        patients.push_back(p); // Add if not in vector
+                    }
+                    cout << "[Main] Patient " << p.getName() << " admitted successfully from OPD.\n";
+                }
                 if (!admitted)
                 {
                     cout << "[Main] Hospital full. Searching nearest hospital for patient " << p.getName() << endl;
@@ -152,10 +168,10 @@ int main()
             break;
 
         case 5:
-            for (auto *h : hospitalPtrs)
+            for (auto h : hospitalList)
             {
-                cout << "\nHospital: " << h->getHospitalName() << " | Location: " << h->getLocationName() << endl;
-                vector<int> occupiedBeds = h->getOccupiedBeds();
+                cout << "\nHospital: " << h.getHospitalName() << " | Location: " << h.getLocationName() << endl;
+                vector<int> occupiedBeds = h.getOccupiedBeds();
                 if (occupiedBeds.empty())
                 {
                     cout << "No beds occupied.\n";

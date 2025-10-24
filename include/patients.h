@@ -14,18 +14,18 @@ private:
     std::string disease;
     std::string locationName;
 
-    int priority;       // Lower number = higher urgency
-    int hospitalID;     // Assigned hospital ID (-1 if not assigned)
-    int bedID;          // Assigned bed ID (-1 if not assigned)
-    std::string status; // "Waiting", "Admitted", "Discharged"
+    int priority;
+    int hospitalID;
+    int bedID;
+    std::string status;
 
 public:
     Patient() = default;
 
     Patient(int id, const std::string &name, int age, const std::string &gender,
             const std::string &disease, const std::string &location);
-    void computePriority(); // Automatically compute priority
-    // Getters
+    void computePriority();
+
     int getPatientID() const;
     std::string getName() const;
     int getAge() const;

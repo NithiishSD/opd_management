@@ -1,5 +1,3 @@
-
-
 #ifndef BED_MANAGER_H
 #define BED_MANAGER_H
 #include "../include/hash_table.h"

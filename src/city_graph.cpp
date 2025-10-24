@@ -5,7 +5,6 @@
 #include <climits>
 using namespace std;
 
-// ------------------- Add Hospital -------------------
 void CityGraph::addHospital(int hospitalID)
 {
     if (adjacencyList.find(hospitalID) == adjacencyList.end())
@@ -14,14 +13,12 @@ void CityGraph::addHospital(int hospitalID)
     }
 }
 
-// ------------------- Add Connection -------------------
 void CityGraph::addConnection(int from, int to, int distance)
 {
     adjacencyList[from].push_back({to, distance});
     adjacencyList[to].push_back({from, distance}); // undirected
 }
 
-// ------------------- Get Connections -------------------
 vector<Edge> CityGraph::getConnections(int hospitalID) const
 {
     if (adjacencyList.find(hospitalID) != adjacencyList.end())
@@ -31,11 +28,9 @@ vector<Edge> CityGraph::getConnections(int hospitalID) const
     return vector<Edge>();
 }
 
-// ------------------- Find Nearest Hospital -------------------
-// Returns hospitalID of nearest hospital with available beds
 int CityGraph::findNearestHospital(int sourceID, const unordered_map<int, int> &availability)
 {
-    // Dijkstra's algorithm
+
     unordered_map<int, int> dist;
     for (auto &pair : adjacencyList)
     {
@@ -44,7 +39,7 @@ int CityGraph::findNearestHospital(int sourceID, const unordered_map<int, int> &
 
     dist[sourceID] = 0;
 
-    // Min-heap: pair<distance, hospitalID>
+    // Min-heap:
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
     pq.push({0, sourceID});
 
@@ -71,5 +66,5 @@ int CityGraph::findNearestHospital(int sourceID, const unordered_map<int, int> &
         }
     }
 
-    return -1; // no available hospital found
+    return -1;
 }

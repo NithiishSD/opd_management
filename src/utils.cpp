@@ -25,7 +25,6 @@ bool isNumber(const string &s)
     return !s.empty() && all_of(s.begin(), s.end(), ::isdigit);
 }
 
-// ================= CSV Reading =================
 vector<Patient> readPatientsFromCSV(const string &filename)
 {
     vector<Patient> patients;
@@ -37,7 +36,7 @@ vector<Patient> readPatientsFromCSV(const string &filename)
     }
 
     string line;
-    getline(file, line); // zskip header
+    getline(file, line);
 
     while (getline(file, line))
     {
@@ -80,7 +79,7 @@ vector<Hospital> readHospitalsFromCSV(const string &filename)
     }
 
     string line;
-    getline(file, line); // skip header
+    getline(file, line);
 
     while (getline(file, line))
     {
@@ -111,16 +110,15 @@ vector<Hospital> readHospitalsFromCSV(const string &filename)
 }
 void savePatientToCSV(const char *filename, const Patient &patient)
 {
-    // Read existing patients
+
     vector<Patient> patients = readPatientsFromCSV(filename);
 
-    // Check if patient already exists (based on patientID)
     bool patientExists = false;
     for (auto &p : patients)
     {
         if (p.getPatientID() == patient.getPatientID())
         {
-            // Update existing patient
+
             p = patient;
             patientExists = true;
             break;
@@ -158,7 +156,6 @@ void savePatientToCSV(const char *filename, const Patient &patient)
     file.close();
 }
 
-// ================= Search Utilities =================
 Patient *findPatientByID(vector<Patient> &patients, int patientID)
 {
     for (auto &p : patients)

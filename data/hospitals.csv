@@ -1,6 +1,6 @@
 id,name,location,bedCount
-1,City General Hospital,New York,50
-2,Sunshine Medical Center,Los Angeles,30
-3,Midtown Health,Chicago,40
-4,Oceanview Clinic,Miami,20
-5,Bay Area Hospital,Boston,25
+1,City General Hospital,New York,1
+2,Sunshine Medical Center,Los Angeles,3
+3,Midtown Health,Chicago,1
+4,Oceanview Clinic,Miami,0
+5,Bay Area Hospital,Boston,5

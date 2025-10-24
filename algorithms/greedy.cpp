@@ -3,7 +3,6 @@
 
 using namespace std;
 
-// Greedy allocation: assign patient to first hospital with free bed
 bool GreedyAllocation::assignPatientToHospital(Patient &p, vector<Hospital *> &hospitalList)
 {
     for (auto *h : hospitalList)

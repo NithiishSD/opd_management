@@ -9,15 +9,15 @@
 class OPDModule
 {
 private:
-    Heap heap; // MaxHeap of patients
+    Heap heap;
 
 public:
     OPDModule(int capacity);
 
-    void registerPatient(const Patient &p); // add patient to OPD
-    Patient assignNextPatient();            // pop patient with highest priority
-    bool hasWaiting() const;                // check if OPD has patients
-    void showWaitingPatients() const;       // print all waiting patients
+    void registerPatient(const Patient &p);
+    Patient assignNextPatient();
+    bool hasWaiting() const;
+    void showWaitingPatients() const;
 };
 
 #endif

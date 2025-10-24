@@ -5,7 +5,6 @@ CXXFLAGS = -std=c++17 -Wall -Iinclude -Ialgorithms
 # Source files
 SRC = src/patients.cpp \
       src/heap.cpp \
-      src/hash_table.cpp \
       modules/opd_module.cpp \
       modules/admission_module.cpp \
       modules/discharge_module.cpp \
