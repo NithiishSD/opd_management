@@ -9,7 +9,7 @@ class GreedyAllocation
 {
 public:
     // Assign patient to the first hospital with available bed from the given list
-    static bool assignPatientToHospital(Patient &p, std::vector<Hospital *> &hospitalList);
+    static Hospital *assignPatientToHospital(Patient &p, std::vector<Hospital *> &hospitalList);
 };
 
 #endif

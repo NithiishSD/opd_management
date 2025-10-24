@@ -18,7 +18,7 @@ public:
 
     // void addHospital(const Hospital &h);
 
-    bool assignPatientToNearestHospital(Patient &p);
+    Hospital *assignPatientToNearestHospital(Patient &p);
 
     // void showAllHospitalBeds() const;
 

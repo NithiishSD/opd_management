@@ -3,6 +3,7 @@
 
 #include "hospital.h"
 #include "patients.h"
+#include "../include/city_integration_module.h"
 #include <vector>
 
 class AdmissionModule
@@ -13,12 +14,11 @@ private:
 public:
     AdmissionModule() = default;
     AdmissionModule(const std::vector<Hospital *> &hospList);
-
-    bool admitPatient(Patient &p);                    // Assign patient to a bed
-    Patient *findPatientByID(int id);                 // Find patient by ID
-    std::vector<Hospital *> &getHospitals();          // Access all hospitals
-    std::vector<std::pair<int, int>> getBeds() const; // HospitalID,BedID pairs
-    void showBedStatus() const;                       // Display hospitalbedstatus
+    bool admitPatient(Patient &p, CityIntegrationModule &city); // Assign patient to a bed
+    Patient *findPatientByID(int id);                           // Find patient by ID
+    std::vector<Hospital *> &getHospitals();                    // Access all hospitals
+    std::vector<std::pair<int, int>> getBeds() const;           // HospitalID,BedID pairs
+    void showBedStatus() const;                                 // Display hospitalbedstatus
 };
 
 #endif

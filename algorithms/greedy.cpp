@@ -1,9 +1,10 @@
 #include "../include/greedy.h"
+#include "../include/hospital.h"
 #include <iostream>
 
 using namespace std;
 
-bool GreedyAllocation::assignPatientToHospital(Patient &p, vector<Hospital *> &hospitalList)
+Hospital *GreedyAllocation::assignPatientToHospital(Patient &p, vector<Hospital *> &hospitalList)
 {
     for (auto *h : hospitalList)
     {
@@ -13,9 +14,9 @@ bool GreedyAllocation::assignPatientToHospital(Patient &p, vector<Hospital *> &h
             p.setHospitalID(h->getHospitalID());
             p.setBedID(bedID);
             p.setStatus("Admitted");
-            return true;
+            return h;
         }
     }
     p.setStatus("Waiting");
-    return false;
+    return nullptr;
 }

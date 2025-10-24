@@ -19,7 +19,6 @@ Patient OPDModule::assignNextPatient()
     {
         Patient p = heap.extractMax();
         std::cout << "[OPD] Assigning patient: " << p.getName() << std::endl;
-
         return p;
     }
     else

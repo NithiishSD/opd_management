@@ -4,10 +4,9 @@
 
 using namespace std;
 
-bool CityIntegrationModule::assignPatientToNearestHospital(Patient &p)
+Hospital *CityIntegrationModule::assignPatientToNearestHospital(Patient &p)
 {
     vector<Hospital *> candidates;
-
     // Try hospitals in same location
     for (auto &h : hospitals)
     {
@@ -23,7 +22,8 @@ bool CityIntegrationModule::assignPatientToNearestHospital(Patient &p)
     }
 
     // Use greedy allocation
-    return GreedyAllocation::assignPatientToHospital(p, candidates);
+    static Hospital *hospital = GreedyAllocation::assignPatientToHospital(p, candidates);
+    return hospital;
 }
 CityIntegrationModule::CityIntegrationModule(const std::vector<Hospital> &hospList)
 {

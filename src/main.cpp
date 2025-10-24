@@ -85,20 +85,16 @@ int main()
             patients.push_back(p); // Add to patients vector
 
             // Attempt to admit the patient
-            bool admitted = admission.admitPatient(p);
-            if (!admitted)
+            bool admitted = admission.admitPatient(p, city);
+            if (admitted)
             {
-                cout << "[Main] Hospital full. Searching nearest hospital for patient " << p.getName() << endl;
-                bool assigned = city.assignPatientToNearestHospital(p);
-                if (!assigned)
-                {
-                    cout << "[Main] All hospitals full. Adding patient to OPD queue.\n";
-                    opd.registerPatient(p);
-                }
+                opd.registerPatient(p);
+                cout << "[Main] Patient " << p.getName() << " admitted successfully in the hospital<<.\n";
             }
             else
             {
-                cout << "[Main] Patient " << p.getName() << " admitted successfully in the hospital<<.\n";
+
+                cout << "[Main] All hospitals full. Adding patient to OPD queue.\n";
             }
 
             // Save patient to CSV
@@ -111,7 +107,7 @@ int main()
             if (opd.hasWaiting())
             {
                 Patient p = opd.assignNextPatient();
-                bool admitted = admission.admitPatient(p);
+                bool admitted = admission.admitPatient(p, city);
                 if (admitted)
                 {
                     // Update or add patient in the patients vector
@@ -133,8 +129,7 @@ int main()
                 }
                 if (!admitted)
                 {
-                    cout << "[Main] Hospital full. Searching nearest hospital for patient " << p.getName() << endl;
-                    city.assignPatientToNearestHospital(p);
+                    cout << "[Main] Hospital full. " << p.getName() << endl;
                 }
             }
             else
