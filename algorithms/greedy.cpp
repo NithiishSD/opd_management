@@ -1,35 +1,22 @@
-#include "greedy.h"
+#include "../include/greedy.h"
 #include <iostream>
+
 using namespace std;
 
-int GreedyAllocation::chooseHospital(const vector<pair<int, int>> &hospitalData)
+// Greedy allocation: assign patient to first hospital with free bed
+bool GreedyAllocation::assignPatientToHospital(Patient &p, vector<Hospital *> &hospitalList)
 {
-    if (hospitalData.empty())
+    for (auto *h : hospitalList)
     {
-        cout << " No hospital data available.\n";
-        return -1;
-    }
-
-    int bestHospitalIndex = 0;
-    double bestScore = 0.0;
-
-    for (int i = 0; i < hospitalData.size(); i++)
-    {
-        int beds = hospitalData[i].first;
-        int distance = hospitalData[i].second;
-
-        // Avoid division by zero if hospital is at same location
-        double score = (distance == 0) ? beds : static_cast<double>(beds) / distance;
-
-        if (score > bestScore)
+        int bedID = h->assignBed(p);
+        if (bedID != -1)
         {
-            bestScore = score;
-            bestHospitalIndex = i;
+            p.setHospitalID(h->getHospitalID());
+            p.setBedID(bedID);
+            p.setStatus("Admitted");
+            return true;
         }
     }
-
-    cout << "Selected Hospital Index: " << bestHospitalIndex
-         << " | Score: " << bestScore << endl;
-
-    return bestHospitalIndex;
+    p.setStatus("Waiting");
+    return false;
 }

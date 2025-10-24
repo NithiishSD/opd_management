@@ -1,87 +1,79 @@
-#include "heap.h"
+#include "../include/heap.h"
 #include <iostream>
+#include <algorithm>
 
-using namespace std;
-
-int Heap::parent(int i) { return (i - 1) / 2; }
-int Heap::left(int i) { return 2 * i + 1; }
-int Heap::right(int i) { return 2 * i + 2; }
-
-void Heap::heapifyUp(int i)
+void Heap::heapifyUp(int index)
 {
-    while (i != 0 && arr[parent(i)].getPriority() < arr[i].getPriority())
+    if (index == 0)
+        return;
+    int parent = (index - 1) / 2;
+    if (heap[index].getPriority() > heap[parent].getPriority())
     {
-        swap(arr[i], arr[parent(i)]);
-        i = parent(i);
+        std::swap(heap[index], heap[parent]);
+        heapifyUp(parent);
     }
 }
 
-void Heap::heapifyDown(int i)
+void Heap::heapifyDown(int index)
 {
-    int largest = i;
-    int l = left(i), r = right(i);
+    int left = 2 * index + 1;
+    int right = 2 * index + 2;
+    int largest = index;
 
-    if (l < size && arr[l].getPriority() > arr[largest].getPriority())
-        largest = l;
-    if (r < size && arr[r].getPriority() > arr[largest].getPriority())
-        largest = r;
+    if (left < heap.size() && heap[left].getPriority() > heap[largest].getPriority())
+        largest = left;
+    if (right < heap.size() && heap[right].getPriority() > heap[largest].getPriority())
+        largest = right;
 
-    if (largest != i)
+    if (largest != index)
     {
-        swap(arr[i], arr[largest]);
+        std::swap(heap[index], heap[largest]);
         heapifyDown(largest);
     }
 }
 
-// Public member functions
-Heap::Heap(int capacity)
-{
-    this->capacity = capacity;
-    size = 0;
-    arr = new Patient[capacity];
-}
-
-Heap::~Heap()
-{
-    delete[] arr;
-}
-
-bool Heap::isEmpty() const { return size == 0; }
-bool Heap::isFull() const { return size == capacity; }
-int Heap::getSize() const { return size; }
-
 void Heap::insert(const Patient &p)
 {
-    if (isFull())
+    if (maxCapacity > 0 && heap.size() >= maxCapacity)
     {
-        cout << "Heap overflow!\n";
+        std::cout << "[Heap] Heap full. Cannot insert patient " << p.getName() << "\n";
         return;
     }
-    arr[size] = p;
-    heapifyUp(size);
-    size++;
+    heap.push_back(p);
+    heapifyUp(heap.size() - 1);
 }
 
 Patient Heap::extractMax()
 {
-    if (isEmpty())
-    {
-        cout << "Heap underflow!\n";
-        return Patient();
-    }
-    Patient root = arr[0];
-    arr[0] = arr[size - 1];
-    size--;
-    heapifyDown(0);
-    return root;
+    if (heap.empty())
+        throw std::runtime_error("Heap is empty");
+
+    Patient top = heap[0];
+    heap[0] = heap.back();
+    heap.pop_back();
+    if (!heap.empty())
+        heapifyDown(0);
+    return top;
 }
 
-void Heap::display() const
+Patient Heap::peek() const
 {
-    cout << "\n--- OPD Priority Queue ---\n";
-    for (int i = 0; i < size; i++)
-    {
-        cout << "[" << arr[i].getPatientID() << "] "
-             << arr[i].getName() << " (Priority: " << arr[i].getPriority() << ")\n";
-    }
+    if (heap.empty())
+        throw std::runtime_error("Heap is empty");
+    return heap[0];
+}
+
+int Heap::size() const
+{
+    return heap.size();
+}
+
+bool Heap::isEmpty() const
+{
+    return heap.empty();
+}
+
+std::vector<Patient> Heap::getHeapCopy() const
+{
+    return heap;
 }

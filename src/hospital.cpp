@@ -1,103 +1,70 @@
 #include "../include/hospital.h"
 #include <iostream>
+#include <algorithm>
+
 using namespace std;
 
-// Default constructor
-Hospital::Hospital() {
-    hospitalID = 0;
-    hospitalName = "";
-    location = "";
-    totalBeds = 0;
-    availableBeds = 0;
+Hospital::Hospital(int id, const string &name, const string &location, int bedCount)
+    : hospitalID(id), hospitalName(name), locationName(location), totalBeds(bedCount), beds(bedCount)
+{
+    // Initialize hash table with capacity = totalBeds
 }
 
-// Parameterized constructor
-Hospital::Hospital(int id, string name, string loc, int beds) {
-    hospitalID = id;
-    hospitalName = name;
-    location = loc;
-    totalBeds = beds;
-    availableBeds = beds;
+// Getters
+int Hospital::getHospitalID() const { return hospitalID; }
+int Hospital::getTotalBeds() const { return totalBeds; }
+string Hospital::getHospitalName() const { return hospitalName; }
+string Hospital::getLocationName() const { return locationName; }
 
-    // Initialize all beds as free
-    for (int i = 1; i <= beds; i++) {
-        bedStatus[i] = true; // true means available
-    }
-}
-
-// ------------------- Basic Info -------------------
-int Hospital::getHospitalID() const {
-    return hospitalID;
-}
-
-string Hospital::getHospitalName() const {
-    return hospitalName;
-}
-
-string Hospital::getLocation() const {
-    return location;
-}
-
-// ------------------- Bed Management -------------------
-bool Hospital::isBedAvailable() const {
-    return availableBeds > 0;
-}
-
-int Hospital::getAvailableBeds() const {
-    return availableBeds;
-}
-
-// Allocate a bed and return bed ID, -1 if none available
-int Hospital::allocateBed() {
-    for (auto &bed : bedStatus) {
-        if (bed.second) { // if bed is free
-            bed.second = false; // mark as occupied
-            availableBeds--;
-            return bed.first;
+// Assign patient to a free bed using hash table
+int Hospital::assignBed(Patient &p)
+{
+    for (int i = 1; i <= totalBeds; i++)
+    {
+        if (!beds.exists(i))
+        { // Bed free
+            beds.insert(i, &p);
+            totalBeds--; // BedID -> Patient
+            return i;
         }
     }
-    return -1; // no free beds
+    return -1; // No bed available
 }
 
-// Release a bed by ID
-void Hospital::releaseBed(int bedID) {
-    if (bedStatus.find(bedID) != bedStatus.end() && !bedStatus[bedID]) {
-        bedStatus[bedID] = true;
-        availableBeds++;
+// Free a bed
+bool Hospital::freeBed(int bedID)
+{
+    if (beds.exists(bedID))
+    {
+        beds.remove(bedID);
+        return true;
     }
+    return false;
 }
 
-// ------------------- Patient Management -------------------
-// Admit a patient
-void Hospital::admitPatient(const Patient &patient) {
-    int bedID = allocateBed();
-    if (bedID != -1) {
-        admittedPatients.push_back(patient);
-        cout << "Patient " << patient.getName() << " admitted to " << hospitalName 
-             << " at bed " << bedID << endl;
-    } else {
-        cout << "No beds available in " << hospitalName << " for patient " 
-             << patient.getName() << endl;
+// Get list of occupied beds
+vector<int> Hospital::getOccupiedBeds() const
+{
+    vector<int> occupied;
+    for (int i = 1; i <= totalBeds; i++)
+    {
+        if (beds.exists(i))
+            occupied.push_back(i);
     }
+    return occupied;
 }
 
-// Discharge a patient by ID
-void Hospital::dischargePatient(int patientID) {
-    for (int i = 0; i < admittedPatients.size(); i++) {
-        if (admittedPatients[i].getPatientID() == patientID) {
-            cout << "Patient " << admittedPatients[i].getName() << " discharged from " 
-                 << hospitalName << endl;
-            admittedPatients.erase(admittedPatients.begin() + i);
-
-            // Release the first occupied bed (simple approach)
-            for (auto &bed : bedStatus) {
-                if (!bed.second) {
-                    releaseBed(bed.first);
-                    break;
-                }
-            }
-            return;
+// Find patient by ID
+Patient *Hospital::getPatientByBed(int patientID)
+{
+    for (int i = 1; i <= totalBeds; i++)
+    {
+        if (beds.exists(i))
+        {
+            Patient *p = *beds.get(i);
+            if (p != nullptr && p->getPatientID() == patientID)
+                return p;
         }
     }
-    cout << "Patient ID " << patientID << " not found in " << hospitalName << endl;
+    return nullptr;
 }

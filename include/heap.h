@@ -2,31 +2,28 @@
 #define HEAP_H
 
 #include "patients.h"
+#include <vector>
+#include <stdexcept>
 
 class Heap
 {
 private:
-    Patient *arr;
-    int capacity;
-    int size;
+    std::vector<Patient> heap;
+    int maxCapacity = 0; // 0 means unlimited
 
-    int parent(int i);
-    int left(int i);
-    int right(int i);
-    void heapifyUp(int i);
-    void heapifyDown(int i);
+    void heapifyUp(int index);
+    void heapifyDown(int index);
 
 public:
-    Heap(int capacity = 100);
-    ~Heap();
+    Heap() = default;
+    Heap(int capacity) : maxCapacity(capacity) {}
 
-    bool isEmpty() const;
-    bool isFull() const;
-    int getSize() const;
-
-    void insert(const Patient &p);
-    Patient extractMax();
-    void display() const;
+    void insert(const Patient &p);            // Add patient to heap
+    Patient extractMax();                     // Remove and return highest priority patient
+    Patient peek() const;                     // View top patient
+    int size() const;                         // Heap size
+    bool isEmpty() const;                     // Check if heap is empty
+    std::vector<Patient> getHeapCopy() const; // Return all patients
 };
 
 #endif

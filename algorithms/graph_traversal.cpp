@@ -1,4 +1,5 @@
-#include "graph.h"
+#include "../include/graph.h"
+#include <iostream>
 using namespace std;
 
 // Constructor: Initialize graph with given number of vertices

@@ -1,49 +1,64 @@
 #include "../include/patients.h"
-#include <ctime>
+#include <algorithm>
+#include <iostream>
+#include <cctype>
 
-// Default constructor
-Patient::Patient()
-{
-    patientID = -1;
-    name = "";
-    age = 0;
-    gender = "";
-    priority = 0;
-    disease = "";
-    assignedHospital = "";
-    assignedBedID = -1;
-    arrivalTime = time(nullptr);
-    location = "";
-}
+using namespace std;
 
-// Constructor without location
-Patient::Patient(int id, string n, int a, string g, int p, string d)
+// Constructor
+Patient::Patient(int id, const string &name, int age, const string &gender,
+                 const string &disease, const string &location)
 {
     patientID = id;
-    name = n;
-    age = a;
-    gender = g;
-    priority = p;
-    disease = d;
-    assignedHospital = "";
-    assignedBedID = -1;
-    arrivalTime = time(nullptr);
-    location = "";
+    this->name = name;
+    this->age = age;
+    this->gender = gender;
+    this->disease = disease;
+    locationName = location;
+
+    hospitalID = -1;
+    bedID = -1;
+    status = "Waiting";
+
+    computePriority();
 }
 
-// Constructor with location
-Patient::Patient(int id, string n, int a, string g, int p, string d, string loc)
+// Automatic priority computation
+void Patient::computePriority()
 {
-    patientID = id;
-    name = n;
-    age = a;
-    gender = g;
-    priority = p;
-    disease = d;
-    assignedHospital = "";
-    assignedBedID = -1;
-    arrivalTime = time(nullptr);
-    location = loc;
+    // Priority mapping: lower number = higher urgency
+    unordered_map<string, int> diseaseSeverity = {
+        {"heart attack", 1},
+        {"stroke", 1},
+        {"severe trauma", 1},
+        {"cancer", 2},
+        {"severe infection", 2},
+        {"respiratory failure", 1},
+        {"pneumonia", 2},
+        {"diabetes complication", 3},
+        {"fracture", 3},
+        {"flu", 4},
+        {"mild infection", 4},
+        {"checkup", 5}};
+
+    int basePriority = 5; // default if disease not listed
+    string d = disease;
+    transform(d.begin(), d.end(), d.begin(), ::tolower);
+
+    for (auto &pair : diseaseSeverity)
+    {
+        if (d.find(pair.first) != string::npos)
+        {
+            basePriority = pair.second;
+            break;
+        }
+    }
+
+    // Age adjustment: elderly (>65) or very young (<5) increase priority
+    if (age > 65 || age < 5)
+        basePriority = max(1, basePriority - 1);
+
+    priority = basePriority;
 }
 
 // Getters
@@ -51,25 +66,14 @@ int Patient::getPatientID() const { return patientID; }
 string Patient::getName() const { return name; }
 int Patient::getAge() const { return age; }
 string Patient::getGender() const { return gender; }
-int Patient::getPriority() const { return priority; }
-time_t Patient::getArrivalTime() const { return arrivalTime; }
 string Patient::getDisease() const { return disease; }
-string Patient::getAssignedHospital() const { return assignedHospital; }
-int Patient::getAssignedBedID() const { return assignedBedID; }
-string Patient::getLocation() const { return location; }
+string Patient::getLocationName() const { return locationName; }
+int Patient::getPriority() const { return priority; }
+int Patient::getHospitalID() const { return hospitalID; }
+int Patient::getBedID() const { return bedID; }
+string Patient::getStatus() const { return status; }
 
 // Setters
-void Patient::setAssignedHospital(const string &hospital)
-{
-    assignedHospital = hospital;
-}
-
-void Patient::setAssignedBedID(int bedID)
-{
-    assignedBedID = bedID;
-}
-
-void Patient::setLocation(const string &loc)
-{
-    location = loc;
-}
+void Patient::setHospitalID(int id) { hospitalID = id; }
+void Patient::setBedID(int id) { bedID = id; }
+void Patient::setStatus(const string &s) { status = s; }

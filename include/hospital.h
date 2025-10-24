@@ -1,42 +1,34 @@
-#ifndef hospital_h
-#define hospital_h
+#ifndef HOSPITAL_H
+#define HOSPITAL_H
 
-#include <string>
-#include <vector>
-#include <unordered_map>
 #include "patients.h"
-using namespace std;
+#include "hash_table.h"
+#include <vector>
+#include <string>
 
 class Hospital
 {
 private:
     int hospitalID;
-    string hospitalName;
-    string location;
+    std::string hospitalName;
+    std::string locationName;
     int totalBeds;
-    int availableBeds;
+
+    HashTable<Patient *> beds; // Custom hash table: BedID -> Patient
 
 public:
-    unordered_map<int, bool> bedStatus;
-    vector<Patient> admittedPatients;
+    Hospital() = default;
+    Hospital(int id, const std::string &name, const std::string &location, int bedCount);
 
-    Hospital();
-    Hospital(int id, string name, string loc, int beds);
-
-    // Basic info
     int getHospitalID() const;
-    string getHospitalName() const;
-    string getLocation() const;
+    std::string getHospitalName() const;
+    std::string getLocationName() const;
+    int getTotalBeds() const;
 
-    // Bed Management
-    bool isBedAvailable() const;
-    int getAvailableBeds() const;
-    int allocateBed();
-    void releaseBed(int bedID);
-
-    // Patient Management
-    void admitPatient(const Patient &patient);
-    void dischargePatient(int patientID);
+    int assignBed(Patient &p);                // Assign patient to a free bed, return BedID or -1
+    bool freeBed(int bedID);                  // Free bed
+    std::vector<int> getOccupiedBeds() const; // List of occupied beds
+    Patient *getPatientByBed(int patientID);  // Find patient by ID
 };
 
 #endif

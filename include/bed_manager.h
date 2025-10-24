@@ -1,23 +1,37 @@
-#ifndef bed_manager_h
-#define bed_manager_h
 
+
+#ifndef BED_MANAGER_H
+#define BED_MANAGER_H
+#include "../include/hash_table.h"
 #include <queue>
 #include <vector>
-#include "hash_table.h"
-using namespace std;
+#include <queue>
+#include <iostream>
 
 class BedManager
 {
 private:
-    HashTable beds;
-    priority_queue<int, vector<int>, greater<int>> freeBeds;
+    int totalBeds;
+    std::priority_queue<int, std::vector<int>, std::greater<int>> freeBeds; // Min-heap of free bed IDs
+    std::vector<bool> bedOccupied;                                          // true = occupied, false = free
 
 public:
-    BedManager(int size = 20);
+    BedManager(int size);
+
+    // Allocate the lowest-numbered free bed; returns -1 if full
     int allocateBed();
+
+    // Release a bed by ID
     void releaseBed(int bedID);
+
+    // Returns number of free beds
     int getAvailableCount() const;
+
+    // Check if any bed is available
     bool isBedAvailable() const;
+
+    // Optional: get occupied beds list
+    std::vector<int> getOccupiedBeds() const;
 };
 
 #endif

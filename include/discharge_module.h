@@ -1,19 +1,20 @@
 #ifndef DISCHARGE_MODULE_H
 #define DISCHARGE_MODULE_H
 
-#include "../include/patients.h"
-#include "../include/hash_table.h"
+#include "patients.h"
+#include "hospital.h"
+#include <vector>
 #include <iostream>
-using namespace std;
 
 class DischargeModule
 {
-    HashTable &beds;
+private:
+    std::vector<Hospital> &hospitals; // reference to hospital list
 
 public:
-    DischargeModule(HashTable &bedsRef);
+    DischargeModule(std::vector<Hospital> &hospList);
 
-    void dischargePatient(Patient &p);
+    void dischargePatient(Patient &p); // discharge a patient and free bed
 };
 
 #endif

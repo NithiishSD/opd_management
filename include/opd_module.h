@@ -3,22 +3,21 @@
 
 #include "heap.h"
 #include "patients.h"
+#include <vector>
 #include <iostream>
-using namespace std;
 
-// OPD Module manages patients waiting in triage queue based on priority
 class OPDModule
 {
 private:
-    Heap triage; // Max-heap based on Patient.priority
+    Heap heap; // MaxHeap of patients
 
 public:
-    OPDModule(int capacity = 100);
+    OPDModule(int capacity);
 
-    void registerPatient(const Patient &p); // Add patient to queue
-    Patient assignNextPatient();            // Serve next patient
-    bool hasWaiting() const;                // Check if queue not empty
-    void showQueue() const;                 // Display queue
+    void registerPatient(const Patient &p); // add patient to OPD
+    Patient assignNextPatient();            // pop patient with highest priority
+    bool hasWaiting() const;                // check if OPD has patients
+    void showWaitingPatients() const;       // print all waiting patients
 };
 
 #endif

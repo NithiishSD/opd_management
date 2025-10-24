@@ -1,4 +1,6 @@
-HospitalID,Name,Beds,Distances
-0,City Hospital A,2,0;5;10
-1,City Hospital B,1,5;0;2
-2,City Hospital C,3,10;2;0
+id,name,location,bedCount
+1,City General Hospital,New York,50
+2,Sunshine Medical Center,Los Angeles,30
+3,Midtown Health,Chicago,40
+4,Oceanview Clinic,Miami,20
+5,Bay Area Hospital,Boston,25

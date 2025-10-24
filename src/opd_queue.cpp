@@ -1,37 +1,53 @@
-#include "../include/opd_queue.h"
+#include "../include/opd_module.h"
+#include "../include/patients.h"
 #include <iostream>
+#include <vector>
+
 using namespace std;
 
-// ------------------- Add Patient -------------------
-void OPDQueue::addPatient(const Patient &p) {
-    heap.insert(p);
-    cout << "Patient " << p.getName() << " added to OPD queue." << endl;
+OPDModule::OPDModule(int capacity)
+{
+    this->capacity = capacity;
 }
 
-// ------------------- Serve Next Patient -------------------
-Patient OPDQueue::nextPatient() {
-    if (heap.isEmpty()) {
-        cout << "OPD queue is empty!" << endl;
-        return Patient(); // return default patient
+void OPDModule::registerPatient(const Patient &p)
+{
+    if (patientHeap.size() >= capacity)
+    {
+        cout << "[OPDModule] OPD queue full! Cannot add patient " << p.getName() << "\n";
+        return;
+    }
+    patientHeap.insert(p); // Insert into custom max-heap
+    cout << "[OPDModule] Patient " << p.getName() << " added to OPD queue.\n";
+}
+
+bool OPDModule::hasWaiting() const
+{
+    return patientHeap.size() > 0;
+}
+
+Patient OPDModule::assignNextPatient()
+{
+    if (patientHeap.size() == 0)
+    {
+        throw runtime_error("[OPDModule] No patients in OPD queue!");
+    }
+    return patientHeap.extractMax(); // Extract patient with highest priority
+}
+
+void OPDModule::showQueue() const
+{
+    vector<Patient> patients = patientHeap.getAllElements(); // Get all elements for display
+    if (patients.empty())
+    {
+        cout << "[OPDModule] No patients waiting in OPD.\n";
+        return;
     }
 
-    Patient topPatient = heap.extractMax(); // highest priority patient
-    cout << "Serving patient " << topPatient.getName() << endl;
-    return topPatient;
-}
-
-// ------------------- Check if Queue is Empty -------------------
-bool OPDQueue::isEmpty() const {
-    return heap.isEmpty();
-}
-
-// ------------------- Get Number of Patients in Queue -------------------
-int OPDQueue::size() const {
-    return heap.getSize();
-}
-
-// ------------------- Display Queue -------------------
-void OPDQueue::display() const {
-    cout << "OPD queue has " << heap.getSize() 
-         << " patients (cannot display all directly)." << endl;
+    cout << "PatientID\tName\tPriority\tLocation\n";
+    for (const auto &p : patients)
+    {
+        cout << p.getPatientID() << "\t" << p.getName() << "\t"
+             << p.getPriority() << "\t" << p.getLocationName() << "\n";
+    }
 }

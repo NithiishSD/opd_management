@@ -1,14 +1,15 @@
-#ifndef GREEDY_H
-#define GREEDY_H
+#ifndef GREEDY_ALLOCATION_H
+#define GREEDY_ALLOCATION_H
 
+#include "hospital.h"
+#include "patients.h"
 #include <vector>
-#include <utility>
-using namespace std;
 
 class GreedyAllocation
 {
 public:
-    int chooseHospital(const vector<pair<int, int>> &hospitalData);
+    // Assign patient to the first hospital with available bed from the given list
+    static bool assignPatientToHospital(Patient &p, std::vector<Hospital *> &hospitalList);
 };
 
 #endif

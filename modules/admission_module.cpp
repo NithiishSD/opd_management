@@ -1,103 +1,83 @@
 #include "../include/admission_module.h"
+#include "../include/utils.h"
+#include <iostream>
 
-AdmissionModule::AdmissionModule(int defaultBeds)
-    : beds(defaultBeds), totalBeds(defaultBeds)
+using namespace std;
+
+AdmissionModule::AdmissionModule(const vector<Hospital> &hospList)
 {
+    hospitals = hospList;
 }
 
-AdmissionModule::AdmissionModule(const string &csvPath, int defaultBeds)
-    : beds(defaultBeds), totalBeds(defaultBeds)
-{
-    if (!csvPath.empty())
-        loadHospitalsFromCSV(csvPath);
-}
-
-void AdmissionModule::loadHospitalsFromCSV(const string &path)
-{
-    ifstream file(path);
-    if (!file.is_open())
-    {
-        cerr << "[Error] Could not open hospital CSV: " << path << endl;
-        return;
-    }
-
-    string line;
-    getline(file, line); // skip header
-    while (getline(file, line))
-    {
-        stringstream ss(line);
-        string city, name, bedsStr;
-        getline(ss, city, ',');
-        getline(ss, name, ',');
-        getline(ss, bedsStr, ',');
-
-        HospitalInfo h;
-        h.city = city;
-        h.hospitalName = name;
-        h.totalBeds = stoi(bedsStr);
-        h.availableBeds = h.totalBeds;
-        hospitals.push_back(h);
-    }
-
-    file.close();
-    cout << "[Admission] Loaded " << hospitals.size() << " hospitals from CSV.\n";
-}
-
+// Admit patient to the first available bed in any hospital
 bool AdmissionModule::admitPatient(Patient &p)
 {
-    if (hospitals.empty())
-    {
-        cout << "[Admission] No hospital data loaded.\n";
-        return false;
-    }
-
     for (auto &h : hospitals)
     {
-        if (h.availableBeds > 0)
+        int bedID = h.assignBed(p);
+        if (bedID != -1)
         {
-            int bedID;
-            if (beds.allocateBed(bedID)) // use new HashTable method
-            {
-                h.availableBeds--;
-                p.setAssignedHospital(h.hospitalName);
-                p.setAssignedBedID(bedID);
+            p.setHospitalID(h.getHospitalID());
+            p.setBedID(bedID);
+            p.setStatus("Admitted");
 
-                cout << "[Admission] " << p.getName()
-                     << " admitted to " << h.hospitalName
-                     << " (Bed #" << bedID
-                     << ", City: " << h.city << ")\n";
-                return true;
-            }
+            return true; // Successfully admitted
         }
     }
-
-    cout << "[Admission] No beds available in any hospital.\n";
-    return false;
+    return false; // No beds available
 }
 
-void AdmissionModule::showBedStatus() const
+// Find patient by ID in all hospitals
+Patient *AdmissionModule::findPatientByID(int id)
 {
-    cout << "\nCurrent Hospital Bed Status:\n";
+    for (auto &h : hospitals)
+    {
+        Patient *p = h.getPatientByBed(id);
+        if (p != nullptr)
+            return p;
+    }
+    return nullptr;
+}
+
+// Return all hospitals (for city integration)
+vector<Hospital> &AdmissionModule::getHospitals()
+{
+    return hospitals;
+}
+
+// Return all occupied beds as HospitalID, BedID pairs
+vector<pair<int, int>> AdmissionModule::getBeds() const
+{
+    vector<pair<int, int>> result;
     for (const auto &h : hospitals)
     {
-        cout << "City: " << h.city
-             << " | Hospital: " << h.hospitalName
-             << " | Beds Occupied: " << (h.totalBeds - h.availableBeds)
-             << "/" << h.totalBeds << endl;
+        vector<int> beds = h.getOccupiedBeds();
+        for (int bed : beds)
+        {
+            result.push_back({h.getHospitalID(), bed});
+        }
     }
+    return result;
 }
 
-void AdmissionModule::showBedStatus(int patientID) const
+// Display bed status of all hospitals
+void AdmissionModule::showBedStatus() const
 {
-    cout << "\n Bed Status for Patient ID " << patientID << ":\n";
-
-    // Search through all beds
-    if (beds.isAvailable(patientID)) // This checks if bedID is free — you may want a mapping
+    cout << "=== Hospital Bed Status ===\n";
+    for (const auto &h : hospitals)
     {
-        cout << " No record found for this patient.\n";
-    }
-    else
-    {
-        cout << "Patient ID " << patientID << " has a bed assigned (ID not tracked here individually).\n";
+        cout << "Hospital " << h.getHospitalName() << " (ID: " << h.getHospitalID() << ")\n";
+        vector<int> beds = h.getOccupiedBeds();
+        cout << "Occupied Beds: ";
+        if (beds.empty())
+        {
+            cout << "None";
+        }
+        else
+        {
+            for (int bed : beds)
+                cout << bed << " ";
+        }
+        cout << "\n";
     }
 }

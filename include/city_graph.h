@@ -1,12 +1,9 @@
-#ifndef city_graph_h
+#ifndef CITY_GRAPH_H
 
-#define city_graph_h
+#define CITY_GRAPH_H
 
 #include <vector>
-#include <string>
 #include <unordered_map>
-#include <limits>
-using namespace std;
 
 struct Edge
 {
@@ -17,14 +14,13 @@ struct Edge
 class CityGraph
 {
 private:
-    unordered_map<int, vector<Edge>> adjacencyList;
+    std::unordered_map<int, std::vector<Edge>> adjacencyList;
 
 public:
     void addHospital(int hospitalID);
     void addConnection(int from, int to, int distance);
-    vector<Edge> getConnections(int hospitalID) const;
-
-    int findNearestHospital(int sourceID, const unordered_map<int, int> &availability);
+    std::vector<Edge> getConnections(int hospitalID) const;
+    int findNearestHospital(int sourceID, const std::unordered_map<int, int> &availability);
 };
 
 #endif

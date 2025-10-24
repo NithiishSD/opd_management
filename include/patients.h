@@ -1,46 +1,52 @@
-#ifndef PATIENTS_H
-#define PATIENTS_H
+#ifndef PATIENT_H
+#define PATIENT_H
 
 #include <string>
-#include <ctime>
-using namespace std;
+#include <unordered_map>
 
 class Patient
 {
 private:
     int patientID;
-    string name;
+    std::string name;
     int age;
-    string gender;
-    int priority;
-    time_t arrivalTime;
-    string disease;
-    string assignedHospital;
-    int assignedBedID;
-    string location; // City zone or area
+    std::string gender;
+    std::string disease;
+    std::string locationName;
+
+    int priority;       // Lower number = higher urgency
+    int hospitalID;     // Assigned hospital ID (-1 if not assigned)
+    int bedID;          // Assigned bed ID (-1 if not assigned)
+    std::string status; // "Waiting", "Admitted", "Discharged"
 
 public:
-    // Constructors
-    Patient();
-    Patient(int id, string n, int a, string g, int p, string d);
-    Patient(int id, string n, int a, string g, int p, string d, string loc);
+    Patient() = default;
 
+    Patient(int id, const std::string &name, int age, const std::string &gender,
+            const std::string &disease, const std::string &location);
+    void computePriority(); // Automatically compute priority
     // Getters
     int getPatientID() const;
-    string getName() const;
+    std::string getName() const;
     int getAge() const;
-    string getGender() const;
+    std::string getGender() const;
+    std::string getDisease() const;
+    std::string getLocationName() const;
     int getPriority() const;
-    time_t getArrivalTime() const;
-    string getDisease() const;
-    string getAssignedHospital() const;
-    int getAssignedBedID() const;
-    string getLocation() const;
+    int getHospitalID() const;
+    int getBedID() const;
+    std::string getStatus() const;
 
     // Setters
-    void setAssignedHospital(const string &hospital);
-    void setAssignedBedID(int bedID);
-    void setLocation(const string &loc);
+    void setHospitalID(int id);
+    void setBedID(int id);
+    void setStatus(const std::string &s);
+
+    // Operator for hash table usage if needed
+    bool operator==(const Patient &other) const
+    {
+        return patientID == other.patientID;
+    }
 };
 
 #endif

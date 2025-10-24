@@ -1,50 +1,46 @@
 #include "../include/opd_module.h"
-#include "../include/patients.h"
-#include "../include/heap.h"
 #include <iostream>
-using namespace std;
 
-// Constructor
-OPDModule::OPDModule(int capacity) : triage(capacity) {}
+OPDModule::OPDModule(int capacity) : heap(capacity) {}
 
-// Register a patient into OPD queue
 void OPDModule::registerPatient(const Patient &p)
 {
-    triage.insert(p);
-    cout << "[OPD] Registered " << p.getName()
-         << " (Priority " << p.getPriority() << ")\n";
+    // compute priority automatically
+    Patient temp = p;
+    temp.computePriority(); // ensure priority is up-to-date
+    heap.insert(temp);
+    std::cout << "[OPD] Registered patient: " << p.getName()
+              << " | Priority: " << temp.getPriority() << std::endl;
 }
 
-// Assign next patient based on highest priority
 Patient OPDModule::assignNextPatient()
 {
-    if (triage.isEmpty())
+    if (!heap.isEmpty())
     {
-        cout << "[OPD] No patients waiting\n";
-        return Patient();
+        Patient p = heap.extractMax();
+        std::cout << "[OPD] Assigning patient: " << p.getName() << std::endl;
+        return p;
     }
-
-    Patient p = triage.extractMax();
-    cout << "[OPD] Assigning " << p.getName() << " to doctor\n";
-    return p;
+    else
+    {
+        std::cout << "[OPD] No patients waiting\n";
+        return Patient(); // default empty patient
+    }
 }
 
-// Check if queue has waiting patients
 bool OPDModule::hasWaiting() const
 {
-    return !triage.isEmpty();
+    return !heap.isEmpty();
 }
 
-// Display current queue
-void OPDModule::showQueue() const
+void OPDModule::showWaitingPatients() const
 {
-    if (triage.isEmpty())
+    std::cout << "\n[OPD] Waiting Patients (by priority):\n";
+    std::vector<Patient> patients = heap.getHeapCopy();
+    for (const auto &p : patients)
     {
-        cout << "⚠️  No patients currently in queue.\n";
-        return;
+        std::cout << "ID: " << p.getPatientID()
+                  << " | Name: " << p.getName()
+                  << " | Priority: " << p.getPriority() << std::endl;
     }
-
-    cout << "\n====== 🩺 OPD Waiting Queue ======\n";
-    triage.display(); // Calls Heap::display()
-    cout << "=================================\n";
 }

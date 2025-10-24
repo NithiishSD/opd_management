@@ -13,9 +13,10 @@ SRC = src/patients.cpp \
 	  src/bed_manager.cpp\
 	  src/city_graph.cpp\
 	  src/hospital.cpp\
-	  src/opd_queue.cpp\
       src/main.cpp\
 	  src/utils.cpp\
+	  algorithms/greedy.cpp\
+	  algorithms/dijkstra.cpp\
 
 # Object files
 OBJ = $(SRC:.cpp=.o)
