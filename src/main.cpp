@@ -24,11 +24,12 @@ int main()
     vector<Patient> patients = readPatientsFromCSV("data/patients.csv");
 
     OPDModule opd(1000); // OPD max capacity
+    
+    CityIntegrationModule city(hospitalPtrs);
+    city.initializeGraph(hospitalList);
+ //   std::cout << "[Debug] Initialized CityGraph with " << hospitalList.size() << " hospitals\n";
     AdmissionModule admission(hospitalPtrs);
     DischargeModule discharge(hospitalPtrs);
-
-    CityIntegrationModule city(hospitalPtrs);
-
     // ================= Register Patients in OPD =================
     for (auto &p : patients)
     {

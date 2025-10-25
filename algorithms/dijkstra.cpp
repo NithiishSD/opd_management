@@ -1,57 +1,58 @@
 #include "dijkstra.h"
-#include <iostream>
-using namespace std;
+#include <queue>
+#include <climits>
 
-Dijkstra::Dijkstra(int vertices)
-{
-    numVertices = vertices;
-    adjacencyList.resize(vertices);
+Dijkstra::Dijkstra(const vector<int> &hospitalIds) {
+    numVertices = hospitalIds.size();
+    adjacencyList.resize(numVertices);
+    for (size_t i = 0; i < hospitalIds.size(); ++i) {
+        idToIndex[hospitalIds[i]] = i;
+        indexToId[i] = hospitalIds[i];
+    }
 }
 
-void Dijkstra::addEdge(int source, int destination, int distance)
-{
-    adjacencyList[source].push_back({destination, distance});
-    adjacencyList[destination].push_back({source, distance});
+void Dijkstra::addEdge(int source, int destination, int distance) {
+    if (idToIndex.find(source) == idToIndex.end() || idToIndex.find(destination) == idToIndex.end()) {
+        return; // Invalid hospital ID
+    }
+    int srcIndex = idToIndex[source];
+    int destIndex = idToIndex[destination];
+    adjacencyList[srcIndex].push_back({destIndex, distance});
+    adjacencyList[destIndex].push_back({srcIndex, distance});
 }
 
-vector<int> Dijkstra::shortestPath(int startNode)
-{
+vector<pair<int, int>> Dijkstra::shortestPath(int startNode) {
+    if (idToIndex.find(startNode) == idToIndex.end()) {
+        return {}; // Invalid start node
+    }
+    int startIndex = idToIndex[startNode];
     vector<int> distance(numVertices, INT_MAX);
-    vector<bool> visited(numVertices, false);
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    distance[startIndex] = 0;
+    pq.push({0, startIndex});
 
-    distance[startNode] = 0;
+    while (!pq.empty()) {
+        int dist = pq.top().first;
+        int u = pq.top().second;
+        pq.pop();
 
-    for (int count = 0; count < numVertices - 1; count++)
-    {
-        int minIndex = -1;
-        int minDistance = INT_MAX;
+        if (dist > distance[u]) continue;
 
-        for (int i = 0; i < numVertices; i++)
-        {
-            if (!visited[i] && distance[i] < minDistance)
-            {
-                minDistance = distance[i];
-                minIndex = i;
-            }
-        }
-
-        if (minIndex == -1)
-            break;
-
-        visited[minIndex] = true;
-
-        for (auto &neighbor : adjacencyList[minIndex])
-        {
-            int nextNode = neighbor.first;
-            int edgeWeight = neighbor.second;
-
-            if (!visited[nextNode] && distance[minIndex] != INT_MAX &&
-                distance[minIndex] + edgeWeight < distance[nextNode])
-            {
-                distance[nextNode] = distance[minIndex] + edgeWeight;
+        for (auto &neighbor : adjacencyList[u]) {
+            int v = neighbor.first;
+            int weight = neighbor.second;
+            if (distance[u] != INT_MAX && distance[u] + weight < distance[v]) {
+                distance[v] = distance[u] + weight;
+                pq.push({distance[v], v});
             }
         }
     }
 
-    return distance;
+    vector<pair<int, int>> result;
+    for (int i = 0; i < numVertices; ++i) {
+        if (distance[i] != INT_MAX) {
+            result.emplace_back(indexToId[i], distance[i]);
+        }
+    }
+    return result;
 }

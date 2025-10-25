@@ -175,3 +175,20 @@ Hospital *findHospitalByID(vector<Hospital> &hospitals, int hospitalID)
     }
     return nullptr;
 }
+void initializeHospitalConnections(CityGraph &graph, const std::vector<Hospital> &hospitals) {
+    // Add all hospitals as nodes
+    for (const auto &h : hospitals) {
+        graph.addHospital(h.getHospitalID());
+       // std::cout << "[Debug] Added hospital to graph: ID=" << h.getHospitalID() << ", Name=" << h.getHospitalName() << "\n";
+    }
+    // Add edges: distance = 1 for same location, 10 for different locations
+    for (size_t i = 0; i < hospitals.size(); ++i) {
+        for (size_t j = i + 1; j < hospitals.size(); ++j) {
+            int fromID = hospitals[i].getHospitalID();
+            int toID = hospitals[j].getHospitalID();
+            int distance = (hospitals[i].getLocationName() == hospitals[j].getLocationName()) ? 1 : i+2;
+            graph.addConnection(fromID, toID, distance);
+         //   std::cout << "[Debug] Added edge: " << fromID << " -> " << toID << ", Distance=" << distance << "\n";
+        }
+    }
+}
