@@ -33,6 +33,6 @@ Hospital *GreedyAllocation::assignPatientToHospital(Patient &p, std::vector<Hosp
     }
 
     p.setStatus("Waiting");
-    std::cout << "[GreedyAllocation] No beds available in any hospital for patient " << p.getName() << "\n";
+    // std::cout << "[GreedyAllocation] No beds available in any hospital for patient " << p.getName() << "\n";
     return nullptr;
 }
